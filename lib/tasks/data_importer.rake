@@ -15,8 +15,10 @@ namespace :data_importer do
     log_datetime = DateTime.now.strftime("%Y%jT%H%M%S")
     err_log_file = "import-errors_#{log_datetime}.log"
     proc_log_file = "import-progress_#{log_datetime}.log"
-    error_logger = Logger.new(File.open(LOG_DIR + err_log_file))
-    proc_logger = Logger.new(File.open(LOG_DIR + proc_log_file))
+    error_logger = Logger.new(File.open(LOG_DIR + err_log_file,
+                              File::WRONLY | File::APPEND | File::CREAT))
+    proc_logger = Logger.new(File.open(LOG_DIR + proc_log_file,
+                              File::WRONLY | File::APPEND | File::CREAT))
     row_i = 0; transaction_errors = 0; transactions_added = 0
 
     # Import filename variable
@@ -27,17 +29,19 @@ namespace :data_importer do
       marker.report("import_to_db") do
         CSV.foreach(IMPORT_FILE_DIR + import_filename) do |transaction_row|
           row_i += 1
-          Transaction.new({
+          new_trxn = Transaction.new({
             reported_date: transaction_row[0],
             reported_amount: transaction_row[1],
-            reported_description: transaction[4]
+            reported_description: transaction_row[4]
           })
           begin
-            Transaction.save!
+            # proc_logger.info("[TEST-SAVE][#{row_i}]\t#{new_trxn.inspect}")
+            new_trxn.save!
             transactions_added += 1
           rescue Exception => e
             transaction_errors += 1
-            error_logger.error("Error importing Row##{row_i}: #{transaction_row.inspect}")
+            error_msg = "#{transaction_row}\t[Error: #{e.inspect}]"
+            error_logger.error("Error importing Row##{row_i}: #{error_msg}")
           end
         end
       end
