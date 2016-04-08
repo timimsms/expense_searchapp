@@ -50,5 +50,30 @@ namespace :data_importer do
       puts "Import Errors:\t\t#{transaction_errors}"
     end
   end
+
+  desc "Imports Card data from existing Transactions"
+  task import_cards: :environment do
+    card_regexp = /CARD\s(\d{4})/
+    Transaction.search("CARD").each do |transaction|
+      match = transaction.reported_description.match card_regexp
+
+      if match.present?
+        result_card_num = match[1]
+        card = Card.where(last_four_digits: result_card_num).first
+        if (result_card_num.present?) && !card.present?
+          card = Card.new({
+            last_four_digits: result_card_num
+          })
+          card.save!
+        end
+        transaction.card = card
+        transaction.save!
+      else
+        puts "NO MATCH: #{transaction.reported_description}"
+      end
+
+    end
+  end
+
 end
 
