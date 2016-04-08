@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  reported_date: MyString
+  reported_amount: MyString
+  reported_description: MyString
+  is_complete: false
+
+two:
+  reported_date: MyString
+  reported_amount: MyString
+  reported_description: MyString
+  is_complete: false
