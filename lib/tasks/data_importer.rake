@@ -121,7 +121,7 @@ namespace :data_importer do
           end
         else
           no_match << bank_transaction
-          no_match_log_file.info("[#{bank_transaction.id}]\t#{trxn.reported_description}")
+          proc_logger.info("[#{bank_transaction.id}]\t#{bank_transaction.reported_description}")
         end
       end
     end
@@ -151,9 +151,43 @@ namespace :data_importer do
       "Broadstone Water Rent",
       "DIRECT PAY",
       "INTERNATIONAL PURCHASE TRANSACTION FEE",
-      "POS PURCHASE"
+      "POS PURCHASE",
+      "DEBIT CARD",
+      "Payroll Service PAYROLL",
+      "ONLINE TRANSFER",
+      "WIRE TRANS SVC CHARGE",
+      "AMERICAS BUSINES PREAUTHPMT",
+      "FEE",
+      "THE HARTFORD NWTBCLSCIC",
+      "Cottonwoods LLC Rent",
+      "KABBAGE INC PAYMENT",
+      "WT FED#",
+      "ZENPAYROLL",
+      "WITHDRAWAL",
+      "RECUR DEBIT CRD",
+      "GUSTO",
+      "WT",
+      "eDeposit",
+      "KABBAGE INC LOAN",
+      "eWithdrawal",
+      "Little Cottonwoo Rent",
+      "OVERDRAFT",
+      "TRANSFER",
+      "VERIZON WIRELESS",
+      "BANKCARD",
+      "COX",
+      "DEBIT CRD",
+      "AUTHNET GATEWAY BILLING",
+      "AETNA",
+      "HMF HMFUSA.com",
+      "DEPOSIT",
+      "PAYSIMPLE",
+      "ONLINE DEP DETAIL & IMAGES",
+      "PHILA INS CO",
+      "WF Bus Credit",
+      "THE GUARDIAN"
     ]
-    new_cat_count = 0
+    new_cat_count = 0; total_match_count = 0
 
     search_terms.each do |search_term|
       category = Category.where(transaction_keyword: search_term).first
@@ -173,9 +207,10 @@ namespace :data_importer do
 
       if category.present? && category.valid?
         BankTransaction.uncategorized.search(search_term).each do |bank_transaction|
+          total_match_count += 1
           bank_transaction.categories << category
           bank_transaction.save!
-          proc_logger.info("BankTransaction##{bank_transaction.id} := `#{result_category}`")
+          proc_logger.info("BankTransaction##{bank_transaction.id} := `#{search_term}`")
         end
       end
     end

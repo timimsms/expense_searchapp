@@ -93,5 +93,17 @@ namespace :data_searcher do
     end
     puts "\r\nTOTAL COUNT: #{BankTransaction.uncategorized.count}"
   end
+
+  desc "Logs all remaining uncategorized BankTransactions"
+  task log_uncategorized_transactions: :environment do
+    log_datetime = DateTime.now.strftime("%Y%jT%H%M%S")
+    log_file = "uncategorized_#{log_datetime}.log"
+    logger = Logger.new(File.open("#{Rails.root}/log/#{log_file}",
+                        File::WRONLY | File::APPEND | File::CREAT))
+    BankTransaction.uncategorized.each do |bt|
+      logger.info("[#{bt.id}]\t#{bt.reported_description}")
+    end
+    logger.info("\r\nTOTAL COUNT: #{BankTransaction.uncategorized.count}")
+  end
 end
 
