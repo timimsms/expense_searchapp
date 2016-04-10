@@ -24,7 +24,7 @@ namespace :data_searcher do
     no_match = []
 
     queries.each do |keyword, trxn_regexp|
-      BankTransaction.search(keyword).each do |bank_transaction|
+      BankTransaction.uncategorized.search(keyword).each do |bank_transaction|
         match = bank_transaction.reported_description.match trxn_regexp
 
         if match.present?
@@ -60,18 +60,38 @@ namespace :data_searcher do
 
   desc "Search for potential categories from keywords"
   task categorize_by_search_terms: :environment do
-    # TODO - Implement this after the Category model has been added to schema
-    ## Start with ALL BankTransactions WITHOUT a Category
-    # => BankTransaction.where("categories_bank_transactions_ids = []")
-    ## Manually hande:
-    # => TODO - Handle `WF Direct Pay-Payment`
-    # => TODO - Handle `CHECK`
-    # => TODO - Handle `BILL PAY`
-    # => TODO - Handle `SRP SUREPAY`
-    # => TODO - Handle `Broadstone Water Rent`
-    # => TODO - Handle `DIRECT PAY`
-    # => TODO - Handle `INTERNATIONAL PURCHASE TRANSACTION FEE`
-    # => TODO - Handle `POS PURCHASE`
+    search_terms = [
+      "WF Direct Pay-Payment",
+      "CHECK",
+      "BILL PAY",
+      "SRP SUREPAY",
+      "Broadstone Water Rent",
+      "DIRECT PAY",
+      "INTERNATIONAL PURCHASE TRANSACTION FEE",
+      "POS PURCHASE"
+    ]
+    categories = {}
+
+    total_categorized = 0
+    search_terms.each do |search_term|
+      categories[search_term] = BankTransaction.uncategorized.search(search_term).count
+      total_categorized += categories[search_term]
+    end
+
+    puts "== == RESULTS == =="
+    categories.each do |k,v|
+      puts "#{k}:\t#{v}"
+    end
+    puts "\r\nTOTAL CATEGORIZED: #{total_categorized}"
+    puts "REMAINING UNCATEGORIZED: #{BankTransaction.uncategorized.count}"
+  end
+
+  desc "Lists all remaining uncategorized BankTransactions"
+  task list_uncategorized_transactions: :environment do
+    BankTransaction.uncategorized.each do |bt|
+      puts "[#{bt.id}]\t#{bt.reported_description}"
+    end
+    puts "\r\nTOTAL COUNT: #{BankTransaction.uncategorized.count}"
   end
 end
 
