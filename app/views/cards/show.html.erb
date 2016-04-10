@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Last four digits:</strong>
+  <%= @card.last_four_digits %>
+</p>
+
+<p>
+  <strong>Owner:</strong>
+  <%= @card.owner %>
+</p>
+
+<%= link_to 'Edit', edit_card_path(@card) %> |
+<%= link_to 'Back', cards_path %>
