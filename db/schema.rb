@@ -11,10 +11,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160408155754) do
+ActiveRecord::Schema.define(version: 20160410052140) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "bank_transactions", force: :cascade do |t|
+    t.string   "reported_date"
+    t.string   "reported_amount"
+    t.string   "reported_description"
+    t.boolean  "is_complete",          default: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.integer  "card_id"
+  end
+
+  add_index "bank_transactions", ["card_id"], name: "index_bank_transactions_on_card_id", using: :btree
+
+  create_table "bank_transactions_categories", id: false, force: :cascade do |t|
+    t.integer "bank_transaction_id", null: false
+    t.integer "category_id",         null: false
+  end
 
   create_table "cards", force: :cascade do |t|
     t.string   "last_four_digits"
@@ -24,6 +41,14 @@ ActiveRecord::Schema.define(version: 20160408155754) do
   end
 
   add_index "cards", ["last_four_digits"], name: "index_cards_on_last_four_digits", unique: true, using: :btree
+
+  create_table "categories", force: :cascade do |t|
+    t.string   "transaction_keyword"
+    t.string   "label"
+    t.text     "description"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
 
   create_table "pg_search_documents", force: :cascade do |t|
     t.text     "content"
@@ -35,17 +60,5 @@ ActiveRecord::Schema.define(version: 20160408155754) do
 
   add_index "pg_search_documents", ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable_type_and_searchable_id", using: :btree
 
-  create_table "transactions", force: :cascade do |t|
-    t.string   "reported_date"
-    t.string   "reported_amount"
-    t.string   "reported_description"
-    t.boolean  "is_complete",          default: false
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.integer  "card_id"
-  end
-
-  add_index "transactions", ["card_id"], name: "index_transactions_on_card_id", using: :btree
-
-  add_foreign_key "transactions", "cards"
+  add_foreign_key "bank_transactions", "cards"
 end
