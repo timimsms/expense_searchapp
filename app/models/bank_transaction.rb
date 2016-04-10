@@ -1,3 +1,4 @@
+# TODO - Should implement an "uncategorized" scope (i.e., no Categories associated).
 class BankTransaction < ActiveRecord::Base
   belongs_to :card
 
