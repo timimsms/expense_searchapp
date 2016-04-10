@@ -76,9 +76,14 @@ namespace :data_importer do
     end
   end
 
-  desc "Import Category data from existing BankTranscations"
-  task import_categories :environment do
+  desc "Import Category data from existing BankTranscations using Regex rules."
+  task import_categories_via_regex: :environment do
+    # TODO - implement after Category object is added to schema and associated with BankTransactions
+  end
 
+  desc "Import Category data from existing BankTranscations with manually defined rules."
+  task import_categories_via_rules: :environment do
+    # TODO - implement after `data_searcher:categorize_by_search_terms`
   end
 end
 
