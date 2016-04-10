@@ -78,66 +78,112 @@ namespace :data_importer do
 
   desc "Import Category data from existing BankTranscations using Regex rules."
   task import_categories_via_regex: :environment do
-    # log_datetime = DateTime.now.strftime("%Y%jT%H%M%S")
-    # err_log_file = "category-errors_#{log_datetime}.log"
-    # proc_log_file = "category-progress_#{log_datetime}.log"
-    # no_match_log_file = "category-unmatched_#{log_datetime}.log"
-    # error_logger = Logger.new(File.open(LOG_DIR + err_log_file,
-    #                           File::WRONLY | File::APPEND | File::CREAT))
-    # proc_logger = Logger.new(File.open(LOG_DIR + proc_log_file,
-    #                           File::WRONLY | File::APPEND | File::CREAT))
-    # queries = {
-    #   "RECURRING" => /\b..... ([a-zA-Z|\s|*]{4,}+)/,
-    #   "PURCHASE" => /\b..... ([a-zA-Z|\s|*]{4,}+)/
-    # }
-    # no_match = []; total_match_count = 0; new_cat_count = 0
-    # queries.each do |keyword, trxn_regexp|
-    #   # TODO - update to use BankTransaction.uncategorized once scope is added
-    #   BankTransaction.uncategorized.search(keyword).each do |bank_transaction|
-    #     match = bank_transaction.reported_description.match trxn_regexp
-    #
-    #     if match.present?
-    #       result_category = match[1]
-    #       if result_category.present?
-    #         total_match_count += 1
-    #         category = Category.where(transaction_keyword: result_category).first
-    #         if category.blank?
-    #           begin
-    #             category = Category.new({
-    #               transaction_keyword: result_category
-    #             })
-    #             category.save!
-    #             new_cat_count += 1
-    #             proc_logger.info("New Category created for `#{result_category}`!")
-    #           rescue Exception => e
-    #             error_logger.error(e)
-    #             proc_logger.info("Category create! failed for `#{result_category}`.")
-    #           end
-    #         end
-    #
-    #         if category.present? && category.valid?
-    #           bank_transaction.categories << category
-    #           bank_transaction.save!
-    #           proc_logger.info("BankTransaction##{bank_transaction.id} := `#{result_category}`")
-    #         end
-    #       end
-    #     else
-    #       no_match << bank_transaction
-    #       no_match_log_file.info("[#{bank_transaction.id}]\t#{trxn.reported_description}")
-    #     end
-    #   end
-    # end
-    # proc_logger.info("")
-    # proc_logger.info("=" * 80)
-    # proc_logger.info("TOTAL CATEGORIES:\t#{categories.count} (#{new_cat_count} new!)")
-    # proc_logger.info("TOTAL MATCHED:\t#{total_match_count}")
-    # proc_logger.info("TOTAL W/O MATCH:\t#{no_match.count}")
-    # proc_logger.info("(See #{no_match_log_file} for unmatched BankTransction information)")
+    log_datetime = DateTime.now.strftime("%Y%jT%H%M%S")
+    err_log_file = "category_regex-errors_#{log_datetime}.log"
+    proc_log_file = "category_regex-progress_#{log_datetime}.log"
+    no_match_log_file = "category_regex-unmatched_#{log_datetime}.log"
+    error_logger = Logger.new(File.open(LOG_DIR + err_log_file,
+                              File::WRONLY | File::APPEND | File::CREAT))
+    proc_logger = Logger.new(File.open(LOG_DIR + proc_log_file,
+                              File::WRONLY | File::APPEND | File::CREAT))
+    queries = {
+      "RECURRING" => /\b..... ([a-zA-Z|\s|*]{4,}+)/,
+      "PURCHASE" => /\b..... ([a-zA-Z|\s|*]{4,}+)/
+    }
+    no_match = []; total_match_count = 0; new_cat_count = 0
+    queries.each do |keyword, trxn_regexp|
+      BankTransaction.uncategorized.search(keyword).each do |bank_transaction|
+        match = bank_transaction.reported_description.match trxn_regexp
+        if match.present?
+          result_category = match[1]
+          if result_category.present?
+            total_match_count += 1
+            category = Category.where(transaction_keyword: result_category).first
+            if category.blank?
+              begin
+                category = Category.new({
+                  transaction_keyword: result_category
+                })
+                category.save!
+                new_cat_count += 1
+                proc_logger.info("New Category created for `#{result_category}`!")
+              rescue Exception => e
+                error_logger.error(e)
+                proc_logger.info("Category create! failed for `#{result_category}`.")
+              end
+            end
+
+            if category.present? && category.valid?
+              bank_transaction.categories << category
+              bank_transaction.save!
+              proc_logger.info("BankTransaction##{bank_transaction.id} := `#{result_category}`")
+            end
+          end
+        else
+          no_match << bank_transaction
+          no_match_log_file.info("[#{bank_transaction.id}]\t#{trxn.reported_description}")
+        end
+      end
+    end
+    proc_logger.info("")
+    proc_logger.info("=" * 80)
+    proc_logger.info("TOTAL CATEGORIES:\t#{Category.count} (#{new_cat_count} new!)")
+    proc_logger.info("TOTAL CATEGORIZED:\t#{total_match_count}")
+    proc_logger.info("TOTAL W/O CATEGORY:\t#{no_match.count}")
+    proc_logger.info("(See #{no_match_log_file} for unmatched BankTransction information)")
   end
 
   desc "Import Category data from existing BankTranscations with manually defined rules."
   task import_categories_via_rules: :environment do
-    # TODO - implement after `data_searcher:categorize_by_search_terms`
+    log_datetime = DateTime.now.strftime("%Y%jT%H%M%S")
+    err_log_file = "category_rules-errors_#{log_datetime}.log"
+    proc_log_file = "category_rules-progress_#{log_datetime}.log"
+    error_logger = Logger.new(File.open(LOG_DIR + err_log_file,
+                              File::WRONLY | File::APPEND | File::CREAT))
+    proc_logger = Logger.new(File.open(LOG_DIR + proc_log_file,
+                              File::WRONLY | File::APPEND | File::CREAT))
+
+    search_terms = [
+      "WF Direct Pay-Payment",
+      "CHECK",
+      "BILL PAY",
+      "SRP SUREPAY",
+      "Broadstone Water Rent",
+      "DIRECT PAY",
+      "INTERNATIONAL PURCHASE TRANSACTION FEE",
+      "POS PURCHASE"
+    ]
+    new_cat_count = 0
+
+    search_terms.each do |search_term|
+      category = Category.where(transaction_keyword: search_term).first
+      unless category.present?
+        begin
+          category = Category.new({
+            transaction_keyword: search_term
+          })
+          category.save!
+          new_cat_count += 1
+          proc_logger.info("New Category created for `#{search_term}`!")
+        rescue Exception => e
+          error_logger.error(e)
+          proc_logger.info("Category create! failed for `#{search_term}`.")
+        end
+      end
+
+      if category.present? && category.valid?
+        BankTransaction.uncategorized.search(search_term).each do |bank_transaction|
+          bank_transaction.categories << category
+          bank_transaction.save!
+          proc_logger.info("BankTransaction##{bank_transaction.id} := `#{result_category}`")
+        end
+      end
+    end
+
+    proc_logger.info("")
+    proc_logger.info("=" * 80)
+    proc_logger.info("TOTAL CATEGORIES:\t#{Category.count} (#{new_cat_count} new!)")
+    proc_logger.info("TOTAL CATEGORIZED:\t#{total_match_count}")
   end
 end
 
