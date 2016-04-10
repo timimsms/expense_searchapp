@@ -1,3 +1,3 @@
 class Card < ActiveRecord::Base
-  has_many :transactions
+  has_many :bank_transactions
 end

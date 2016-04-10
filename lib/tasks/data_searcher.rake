@@ -6,7 +6,7 @@ require 'benchmark'
 namespace :data_searcher do
   # => rake data_searcher:categorize_by_regexp_rules
   # TODO - Replace hash counter with adding new Category record to DB
-  # TODO - Associate found Transactions with matching Category object
+  # TODO - Associate found BankTransactions with matching Category object
   desc "Search for potential categories from keywords"
   task categorize_by_regexp_rules: :environment do
     keyword_categories = {}
@@ -19,8 +19,8 @@ namespace :data_searcher do
     no_match = []
 
     queries.each do |keyword, trxn_regexp|
-      Transaction.search(keyword).each do |transaction|
-        match = transaction.reported_description.match trxn_regexp
+      BankTransaction.search(keyword).each do |bank_transaction|
+        match = bank_transaction.reported_description.match trxn_regexp
 
         if match.present?
           result_category = match[1]
@@ -33,7 +33,7 @@ namespace :data_searcher do
             end
           end
         else
-          no_match << transaction
+          no_match << bank_transaction
         end
       end
     end
@@ -56,8 +56,8 @@ namespace :data_searcher do
   desc "Search for potential categories from keywords"
   task categorize_by_search_terms: :environment do
     # TODO - Implement this after the Category model has been added to schema
-    ## Start with ALL Transactions WITHOUT a Category
-    # => Transaction.where("categories_transactions_ids = []")
+    ## Start with ALL BankTransactions WITHOUT a Category
+    # => BankTransaction.where("categories_bank_transactions_ids = []")
     ## Manually hande:
     # => TODO - Handle `WF Direct Pay-Payment`
     # => TODO - Handle `CHECK`

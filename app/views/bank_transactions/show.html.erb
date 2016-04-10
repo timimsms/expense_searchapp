@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Reported date:</strong>
+  <%= @bank_transaction.reported_date %>
+</p>
+
+<p>
+  <strong>Reported amount:</strong>
+  <%= @bank_transaction.reported_amount %>
+</p>
+
+<p>
+  <strong>Reported description:</strong>
+  <%= @bank_transaction.reported_description %>
+</p>
+
+<p>
+  <strong>Is complete:</strong>
+  <%= @bank_transaction.is_complete %>
+</p>
+
+<%= link_to 'Edit', edit_bank_transaction_path(@bank_transaction) %> |
+<%= link_to 'Back', bank_transactions_path %>

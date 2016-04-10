@@ -1,4 +1,4 @@
-class Transaction < ActiveRecord::Base
+class BankTransaction < ActiveRecord::Base
   belongs_to :card
 
   include PgSearch
