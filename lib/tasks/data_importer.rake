@@ -22,7 +22,7 @@ namespace :data_importer do
     row_i = 0; bank_transaction_errors = 0; bank_transactions_added = 0
 
     # Import filename variable(s)
-    import_filenames = Dir["#{path}*.csv"]
+    import_filenames = Dir["#{IMPORT_FILE_DIR}*.csv"]
 
     # Main Import
     Benchmark.bm do |marker|
