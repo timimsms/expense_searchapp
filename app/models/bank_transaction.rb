@@ -8,4 +8,11 @@ class BankTransaction < ActiveRecord::Base
   pg_search_scope :search,
                   against: :reported_description
 
+  scope :uncategorized, -> {
+    where(<<-SQL)
+          NOT EXISTS (SELECT 1
+            FROM   bank_transactions_categories
+            WHERE  bank_transactions.id = bank_transactions_categories.bank_transaction_id)
+        SQL
+  }
 end
