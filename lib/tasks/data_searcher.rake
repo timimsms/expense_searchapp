@@ -3,6 +3,11 @@ require 'set'
 require 'benchmark'
 
 ##
+# Note: The intent of this file is purely for experimental data searches and
+# investigative development. Once a method begins to produce long-term results
+# (e.g., saves changes to an object), the method should be moved to another
+# Rake namespace / task file.
+#
 namespace :data_searcher do
   # => rake data_searcher:categorize_by_regexp_rules
   # TODO - Replace hash counter with adding new Category record to DB

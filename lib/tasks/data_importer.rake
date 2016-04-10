@@ -10,7 +10,7 @@ namespace :data_importer do
   LOG_DIR = "#{Rails.root}/log/"
 
   desc "Imports bank bank_transactions from a specified file."
-  task import_bank_bank_transactions: :environment do
+  task import_bank_transactions: :environment do
     # Setup
     log_datetime = DateTime.now.strftime("%Y%jT%H%M%S")
     err_log_file = "import-errors_#{log_datetime}.log"
@@ -21,27 +21,29 @@ namespace :data_importer do
                               File::WRONLY | File::APPEND | File::CREAT))
     row_i = 0; bank_transaction_errors = 0; bank_transactions_added = 0
 
-    # Import filename variable
-    import_filename = 'PRIMARY_BUSINESS_CHK_XXXXXX5199.csv'
+    # Import filename variable(s)
+    import_filenames = Dir["#{path}*.csv"]
 
     # Main Import
     Benchmark.bm do |marker|
       marker.report("import_to_db") do
-        CSV.foreach(IMPORT_FILE_DIR + import_filename) do |bank_transaction_row|
-          row_i += 1
-          new_trxn = BankTransaction.new({
-            reported_date: bank_transaction_row[0],
-            reported_amount: bank_transaction_row[1],
-            reported_description: bank_transaction_row[4]
-          })
-          begin
-            # proc_logger.info("[TEST-SAVE][#{row_i}]\t#{new_trxn.inspect}")
-            new_trxn.save!
-            bank_transactions_added += 1
-          rescue Exception => e
-            bank_transaction_errors += 1
-            error_msg = "#{bank_transaction_row}\t[Error: #{e.inspect}]"
-            error_logger.error("Error importing Row##{row_i}: #{error_msg}")
+        import_filenames.each do |import_filepath|
+          CSV.foreach(import_filepath) do |bank_transaction_row|
+            row_i += 1
+            new_trxn = BankTransaction.new({
+              reported_date: bank_transaction_row[0],
+              reported_amount: bank_transaction_row[1],
+              reported_description: bank_transaction_row[4]
+            })
+            begin
+              # proc_logger.info("[TEST-SAVE][#{row_i}]\t#{new_trxn.inspect}")
+              new_trxn.save!
+              bank_transactions_added += 1
+            rescue Exception => e
+              bank_transaction_errors += 1
+              error_msg = "#{bank_transaction_row}\t[Error: #{e.inspect}]"
+              error_logger.error("Error importing Row##{row_i}: #{error_msg}")
+            end
           end
         end
       end
@@ -71,9 +73,12 @@ namespace :data_importer do
       else
         puts "NO MATCH: #{bank_transaction.reported_description}"
       end
-
     end
   end
 
+  desc "Import Category data from existing BankTranscations"
+  task import_categories :environment do
+
+  end
 end
 

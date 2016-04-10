@@ -1,0 +1,21 @@
+## Search Expense App
+A small practice app written to process and manage a dataset of banking transactions. Mainly used as a learning environment for regexp practice, testing sandbox, Rails 4, RoR best practices, and other technical / development skills.
+
+### Setup
+Extremely basic applicaton - `rake db:setup; rake db:migrate` for setup and `rails c` / `rails s` for majority of needs. Additional setup steps configuration options are listed below:
+
+#### Data Import & Cateogization
+To import a CSV sheet of bank transactions (currently supports formats from Wells Fargo):
+
+1. Add .csv file(s) to `./src/`. _Note: Currently only supports .csv via CSV library support._
+2. Run `bundle exec rake data_importer:import_bank_transactions` to import the data from `./src/`. **_Note: Files should be removed from `./src/` after import._**
+3. Run `bundle exec rake data_importer:import_cards` to extract reported card data, and associate matcing  _Transactions_ with a valid _Cards_.
+4. [In Progress] Run `bundle exec rake data_importer:import_categories` to extract and association _Categories_ with matching _Transactions_.
+
+_Note: For Step #1, one should be able to import multiple files at a time, but there is very little validation in place to prevent duplicate transactions from being created._
+
+#### Web Application
+There is currently nothing implemented for the web-application portion of the application, and most functionality and resulting utlity is performed directly via the command-line.
+
+In later implementations, there may be utility in spending the hour or two needed to turn the scaffolding provided by Rails into a usable CRUD interface.
+
