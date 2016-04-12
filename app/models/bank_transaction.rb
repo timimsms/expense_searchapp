@@ -18,6 +18,11 @@ class BankTransaction < ActiveRecord::Base
         SQL
   }
 
+  def category_keywords
+    self.categories.map(&:transaction_keyword)
+  end
+
+  ## CSV Export
   def self.to_csv(options = {})
     CSV.generate(options) do |csv|
       csv << csv_column_names
@@ -25,10 +30,6 @@ class BankTransaction < ActiveRecord::Base
         csv << bank_transaction.csv_column_values
       end
     end
-  end
-
-  def category_keywords
-    self.categories.map(&:transaction_keyword)
   end
 
   def self.csv_column_names
