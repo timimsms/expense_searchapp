@@ -2,41 +2,38 @@
 <div class="page-header">
   <h1><%=t '.title', :default => model_class.model_name.human.pluralize.titleize %></h1>
 </div>
-<div class="container">
-	<strong>
-		Download:
-		<%= link_to "CSV", categories_path(format: "csv") %>
-	</strong>
+<div class="panel panel-default">
+  <div class="panel-body">
+		<strong>Download:
+			<%= link_to "CSV", categories_path(format: "csv") %>
+		</strong>
+	</div>
+	<table class="table table-striped">
+	  <thead>
+	    <tr>
+				<th>ID</th>
+	      <th>Cateory / Account Name</th>
+				<th>Total # Transactions</th>
+	      <th>Total $ Amount</th>
+	      <th>Date Range</th>
+	      <th>Cards</th>
+	      <th>Actions</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <% @categories.each do |category| %>
+	      <tr>
+					<td><%= category.id %></td>
+	        <td><%= category.transaction_keyword %></td>
+	        <td><%= category.trxn_count %></td>
+	        <td><%= number_to_currency(category.trxn_total) %></td>
+	        <td><%= category.pretty_trxn_date_range %></td>
+					<td><%= category.pretty_trxn_card_digits %></td>
+	        <td>
+	          <a href='/bank_transactions?category_id=<%= category.id %>'>View Transactions</a>
+	        </td>
+	      </tr>
+	    <% end %>
+	  </tbody>
+	</table>
 </div>
-<table class="table table-striped">
-  <thead>
-    <tr>
-			<th>ID</th>
-      <th>Cateory / Account Name</th>
-			<th>Total # Transactions</th>
-      <th>Total $ Amount</th>
-      <th>Date Range</th>
-      <th>Cards</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @categories.each do |category| %>
-      <tr>
-				<td><%= category.id %></td>
-        <td><%= category.transaction_keyword %></td>
-        <td><%= category.trxn_count %></td>
-        <td><%= number_to_currency(category.trxn_total) %></td>
-        <td><%= category.pretty_trxn_date_range %></td>
-				<td><%= category.pretty_trxn_card_digits %></td>
-        <td>
-          <a href='/bank_transactions?category_id=<%= category.id %>'>View Transactions</a>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<%= link_to t('.new', :default => t("helpers.links.new")),
-            new_category_path,
-            :class => 'btn btn-primary' %>
