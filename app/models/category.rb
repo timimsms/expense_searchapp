@@ -81,7 +81,8 @@ class Category < ActiveRecord::Base
   def self.by_transaction_count
     categories = Category.all.to_a
     categories.sort! { |a,b| b.trxn_count <=> a.trxn_count }
-    Category.for_ids_with_order(categories.map(&:id))
+    # Category.for_ids_with_order(categories.map(&:id))
+    categories.collect { |c| Category.find_by_id(c.id) }
   end
 
 
