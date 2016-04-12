@@ -4,10 +4,16 @@ class BankTransactionsController < ApplicationController
   # GET /bank_transactions
   # GET /bank_transactions.json
   def index
-    if params[:category_id].present?
-      @bank_transactions = Category.find_by_id(params[:category_id]).bank_transactions
+    @category = Category.find_by_id(params[:category_id])
+    if @category.present?
+      @bank_transactions = @category.bank_transactions
     else
       @bank_transactions = BankTransaction.all
+    end
+
+    respond_to do |format|
+      format.html
+      format.csv { send_data @bank_transactions.to_csv }
     end
   end
 
