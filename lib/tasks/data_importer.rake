@@ -185,7 +185,10 @@ namespace :data_importer do
       "ONLINE DEP DETAIL & IMAGES",
       "PHILA INS CO",
       "WF Bus Credit",
-      "THE GUARDIAN"
+      "THE GUARDIAN",
+      "Dropbox*",
+      "PAYPAL *",
+      "ODESK"
     ]
     new_cat_count = 0; total_match_count = 0
 

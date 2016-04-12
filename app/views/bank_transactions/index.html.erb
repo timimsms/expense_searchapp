@@ -1,33 +1,44 @@
-<p id="notice"><%= notice %></p>
-
-<h1>Listing BankTransactions</h1>
-
-<table>
+<%- model_class = BankTransaction -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.pluralize.titleize %></h1>
+</div>
+<table class="table table-striped">
   <thead>
     <tr>
-      <th>Reported date</th>
-      <th>Reported amount</th>
-      <th>Reported description</th>
-      <th>Is complete</th>
-      <th colspan="3"></th>
+      <th><%= model_class.human_attribute_name(:id) %></th>
+      <th><%= model_class.human_attribute_name(:reported_date) %></th>
+      <th><%= model_class.human_attribute_name(:reported_amount) %></th>
+      <th><%= model_class.human_attribute_name(:reported_description) %></th>
+			<th>Category</th>
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
     </tr>
   </thead>
-
   <tbody>
     <% @bank_transactions.each do |bank_transaction| %>
       <tr>
+        <td><%= link_to bank_transaction.id, bank_transaction_path(bank_transaction) %></td>
         <td><%= bank_transaction.reported_date %></td>
         <td><%= bank_transaction.reported_amount %></td>
         <td><%= bank_transaction.reported_description %></td>
-        <td><%= bank_transaction.is_complete %></td>
-        <td><%= link_to 'Show', bank_transaction %></td>
-        <td><%= link_to 'Edit', edit_bank_transaction_path(bank_transaction) %></td>
-        <td><%= link_to 'Destroy', bank_transaction, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td>
+          <% bank_transaction.categories.each do |category| %>
+          <a href='/bank_transactions?category_id=<%= category.id %>'><%= category.transaction_keyword %></a>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_bank_transaction_path(bank_transaction), :class => 'btn btn-mini' %>
+          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                      bank_transaction_path(bank_transaction),
+                      :method => :delete,
+                      :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                      :class => 'btn btn-mini btn-danger' %>
+        </td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
-<br>
-
-<%= link_to 'New BankTransaction', new_bank_transaction_path %>
+<%= link_to t('.new', :default => t("helpers.links.new")),
+            new_bank_transaction_path,
+            :class => 'btn btn-primary' %>

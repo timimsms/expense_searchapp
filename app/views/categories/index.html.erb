@@ -1,31 +1,37 @@
-<p id="notice"><%= notice %></p>
+<%- model_class = Category -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.pluralize.titleize %></h1>
+</div>
 
-<h1>Listing Categories</h1>
-
-<table>
+<table class="table table-striped">
   <thead>
     <tr>
-      <th>Transaction keyword</th>
-      <th>Label</th>
-      <th>Description</th>
-      <th colspan="3"></th>
+			<th>ID</th>
+      <th>Cateory / Account Name</th>
+			<th>Total # Transactions</th>
+      <th>Total $ Amount</th>
+      <th>Date Range</th>
+      <th>Cards</th>
+      <th>Actions</th>
     </tr>
   </thead>
-
   <tbody>
     <% @categories.each do |category| %>
       <tr>
+				<td><%= category.id %></td>
         <td><%= category.transaction_keyword %></td>
-        <td><%= category.label %></td>
-        <td><%= category.description %></td>
-        <td><%= link_to 'Show', category %></td>
-        <td><%= link_to 'Edit', edit_category_path(category) %></td>
-        <td><%= link_to 'Destroy', category, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= category.trxn_count %></td>
+        <td><%= number_to_currency(category.trxn_total) %></td>
+        <td><%= category.pretty_trxn_date_range %></td>
+				<td><%= category.pretty_trxn_card_digits %></td>
+        <td>
+          <a href='/bank_transactions?category_id=<%= category.id %>'>View Transactions</a>
+        </td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
-<br>
-
-<%= link_to 'New Category', new_category_path %>
+<%= link_to t('.new', :default => t("helpers.links.new")),
+            new_category_path,
+            :class => 'btn btn-primary' %>
