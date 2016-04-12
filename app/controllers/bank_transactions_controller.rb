@@ -4,7 +4,11 @@ class BankTransactionsController < ApplicationController
   # GET /bank_transactions
   # GET /bank_transactions.json
   def index
-    @bank_transactions = BankTransaction.all
+    if params[:category_id].present?
+      @bank_transactions = Category.find_by_id(params[:category_id]).bank_transactions
+    else
+      @bank_transactions = BankTransaction.all
+    end
   end
 
   # GET /bank_transactions/1
