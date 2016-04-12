@@ -10,7 +10,7 @@ To import a CSV sheet of bank transactions (currently supports formats from Well
 1. Add .csv file(s) to `./src/`. _Note: Currently only supports .csv via CSV library support._
 2. Run `bundle exec rake data_importer:import_bank_transactions` to import the data from `./src/`. **_Note: Files should be removed from `./src/` after import._**
 3. Run `bundle exec rake data_importer:import_cards` to extract reported card data, and associate matcing  _Transactions_ with a valid _Cards_.
-4. Run `bundle exec rake data_importer:import_categories_via_regex; bundle exec rake data_importer:import_categories_via_rules` to extract and association _Categories_ with matching _Transactions_.
+4. Run `bundle exec rake data_importer:import_categories_via_rules; bundle exec rake data_importer:import_categories_via_regex` to extract and association _Categories_ with matching _Transactions_.
 
 _Note: For Step #1, one should be able to import multiple files at a time, but there is very little validation in place to prevent duplicate transactions from being created._
 
