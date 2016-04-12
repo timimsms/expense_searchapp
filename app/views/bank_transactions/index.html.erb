@@ -4,36 +4,38 @@
 </div>
 <div class="panel panel-default">
   <div class="panel-body">
-		<strong>Download:
-			<%= link_to "CSV", bank_transactions_path(format: "csv", category_id: (@category.id if @category)) %>
-		</strong>
+    <strong>Download:
+      <%= link_to "CSV", bank_transactions_path(format: "csv", category_id: (@category.id if @category)) %>
+    </strong>
   </div>
-	<table class="table table-striped">
-	  <thead>
-	    <tr>
-	      <th><%= model_class.human_attribute_name(:id) %></th>
-	      <th><%= model_class.human_attribute_name(:reported_date) %></th>
-	      <th><%= model_class.human_attribute_name(:reported_amount) %></th>
-	      <th><%= model_class.human_attribute_name(:reported_description) %></th>
-				<th>Category</th>
-	      <th>Card</th>
-	    </tr>
-	  </thead>
-	  <tbody>
-	    <% @bank_transactions.each do |bank_transaction| %>
-	      <tr>
-	        <td><%= link_to bank_transaction.id, bank_transaction_path(bank_transaction) %></td>
-	        <td><%= bank_transaction.reported_date %></td>
-	        <td><%= bank_transaction.reported_amount %></td>
-	        <td><%= bank_transaction.reported_description %></td>
-	        <td>
-	          <% bank_transaction.categories.each do |category| %>
-	          <a href='/bank_transactions?category_id=<%= category.id %>'><%= category.transaction_keyword %></a>
-	          <% end %>
-	        </td>
-					<td><%= (bank_transaction.card.last_four_digits if bank_transaction.card.present?) %></td>
-	      </tr>
-	    <% end %>
-	  </tbody>
-	</table>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th><%= model_class.human_attribute_name(:id) %></th>
+        <th><%= model_class.human_attribute_name(:reported_date) %></th>
+        <th><%= model_class.human_attribute_name(:reported_amount) %></th>
+        <th><%= model_class.human_attribute_name(:reported_description) %></th>
+        <th>Category</th>
+        <th>Card</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @bank_transactions.each do |bank_transaction| %>
+        <tr>
+          <td><%= link_to bank_transaction.id, bank_transaction_path(bank_transaction) %></td>
+          <td><%= bank_transaction.reported_date %></td>
+          <td><%= number_to_currency(bank_transaction.reported_amount) %></td>
+          <td><%= bank_transaction.reported_description %></td>
+          <td>
+            <% bank_transaction.categories.each do |category| %>
+            <a href='/bank_transactions?category_id=<%= category.id %>'><%= category.transaction_keyword %></a>
+            <% end %>
+          </td>
+          <td>
+            <%= (bank_transaction.card.last_four_digits if bank_transaction.card.present?) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>

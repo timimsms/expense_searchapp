@@ -15,7 +15,5 @@ To import a CSV sheet of bank transactions (currently supports formats from Well
 _Note: For Step #1, one should be able to import multiple files at a time, but there is very little validation in place to prevent duplicate transactions from being created._
 
 #### Web Application
-There is currently nothing implemented for the web-application portion of the application, and most functionality and resulting utlity is performed directly via the command-line.
-
-In later implementations, there may be utility in spending the hour or two needed to turn the scaffolding provided by Rails into a usable CRUD interface.
+There is a basic user interface implemented in Bootstrap to support basic functionality around _BanmkTransactions_, _Categories_, and _Cards_.
 
