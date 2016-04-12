@@ -4,6 +4,10 @@ class CategoriesController < ApplicationController
   # GET /categories
   def index
     @categories = Category.by_transaction_count
+    respond_to do |format|
+      format.html
+      format.csv { send_data @categories.to_csv }
+    end
   end
 
   # GET /categories/1

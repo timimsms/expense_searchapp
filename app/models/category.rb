@@ -1,3 +1,5 @@
+require 'csv'
+
 # TODO - Add PgSeach; search method should be multi-search over
 #        transaction_keyword and label
 # TODO - Label should be used as an override when a label needs
@@ -9,6 +11,12 @@
 class Category < ActiveRecord::Base
   has_and_belongs_to_many :bank_transactions,
                           join_table: :bank_transactions_categories
+  scope :for_ids_with_order, ->(ids) {
+    order = sanitize_sql_array(
+      ["position(id::text in ?)", ids.join(',')]
+    )
+    where(:id => ids).order(order)
+  }
 
   def trxn_count
     self.bank_transactions.count
@@ -73,7 +81,32 @@ class Category < ActiveRecord::Base
   def self.by_transaction_count
     categories = Category.all.to_a
     categories.sort! { |a,b| b.trxn_count <=> a.trxn_count }
-    categories
-    categories.collect { |c| Category.find_by_id(c.id) }
+    Category.for_ids_with_order(categories.map(&:id))
+  end
+
+
+  ## CSV Export
+  def self.to_csv(options = {})
+    CSV.generate(options) do |csv|
+      csv << csv_column_names
+      all.each do |category|
+        csv << category.csv_column_values
+      end
+    end
+  end
+
+  def self.csv_column_names
+    [
+      'ID', 'Category / Account Name', 'Total # Transactions',
+      'Total $ Amount', 'Date Range', 'Cards'
+    ]
+  end
+
+  def csv_column_values
+    [
+      self.id, self.transaction_keyword, self.trxn_count,
+      self.trxn_total, self.pretty_trxn_date_range,
+      (self.pretty_trxn_card_digits('; '))
+    ]
   end
 end
