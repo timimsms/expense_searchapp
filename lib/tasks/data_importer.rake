@@ -143,53 +143,12 @@ namespace :data_importer do
     proc_logger = Logger.new(File.open(LOG_DIR + proc_log_file,
                               File::WRONLY | File::APPEND | File::CREAT))
 
-    search_terms = [
-      "WF Direct Pay-Payment",
-      "CHECK",
-      "BILL PAY",
-      "SRP SUREPAY",
-      "Broadstone Water Rent",
-      "DIRECT PAY",
-      "INTERNATIONAL PURCHASE TRANSACTION FEE",
-      "POS PURCHASE",
-      "DEBIT CARD",
-      "Payroll Service PAYROLL",
-      "ONLINE TRANSFER",
-      "WIRE TRANS SVC CHARGE",
-      "AMERICAS BUSINES PREAUTHPMT",
-      "FEE",
-      "THE HARTFORD NWTBCLSCIC",
-      "Cottonwoods LLC Rent",
-      "KABBAGE INC PAYMENT",
-      "WT FED#",
-      "ZENPAYROLL",
-      "WITHDRAWAL",
-      "RECUR DEBIT CRD",
-      "GUSTO",
-      "WT",
-      "eDeposit",
-      "KABBAGE INC LOAN",
-      "eWithdrawal",
-      "Little Cottonwoo Rent",
-      "OVERDRAFT",
-      "TRANSFER",
-      "VERIZON WIRELESS",
-      "BANKCARD",
-      "COX",
-      "DEBIT CRD",
-      "AUTHNET GATEWAY BILLING",
-      "AETNA",
-      "HMF HMFUSA.com",
-      "DEPOSIT",
-      "PAYSIMPLE",
-      "ONLINE DEP DETAIL & IMAGES",
-      "PHILA INS CO",
-      "WF Bus Credit",
-      "THE GUARDIAN",
-      "Dropbox*",
-      "PAYPAL *",
-      "ODESK"
-    ]
+    # TEMP: Moved to ./src/search_terms.txt - TW
+    search_file = "search_terms.txt"
+    search_terms = []
+    File.open("#{Rails.root}/src/#{search_file}", "r").each_line do |line|
+      search_terms << line
+    end
     new_cat_count = 0; total_match_count = 0
 
     search_terms.each do |search_term|
