@@ -21,6 +21,7 @@ capybara-*.html
 /db/data/*
 !/db/data/.keep
 /src/*
+!/src/search_terms.EXAMPLE.txt
 !/src/.keep
 /public/system
 /coverage/
